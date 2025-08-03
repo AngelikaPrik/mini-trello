@@ -18,7 +18,7 @@
             <li>{{ task.title }}</li>
           </template>
         </draggable>
-        <button @click="onAddTask(col.id)">Добавить задачу</button>
+        <UiButton @click="onAddTask(col.id)">Добавить задачу</UiButton>
       </div>
     </template>
   </draggable>
@@ -28,6 +28,8 @@
 <script setup lang="ts">
 import draggable from 'vuedraggable'
 import { useBoardStore } from '@/stores/board'
+import UiButton from '@/components/ui/UiButton.vue'
+
 const board = useBoardStore()
 
 const onAddColumn = () => {
