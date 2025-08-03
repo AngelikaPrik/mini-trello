@@ -1,48 +1,69 @@
 <template>
-	<section class='board'>
-		<div v-for='col in board.columns' :key='col.id' class='column'>
-			<h2>
-				{{ col.title }}
-				<button @click="onRemoveColumn(col.id)">✖</button>
-			</h2>
+  <draggable
+    v-model="board.columns"
+    :group="'columns'"
+    :handle="'.column-handle'"
+    item-key="id"
+    :animation="500"
+    class="board"
+  >
+    <template #item="{ element: col }">
+      <div class="column">
+        <h2>
+          {{ col.title }}
+          <button @click="onRemoveColumn(col.id)">✖</button>
+        </h2>
 
-			<ul>
-				<li v-for='task in col.tasks' :key='task.id'>{{ task.title }}</li>
-			</ul>
-			<button v-on:click='onAddTask(col.id)'>Добавить задачу</button>
-		</div>
-		<button v-on:click='onAddColumn'>Добавить колонку</button>
-	</section>
+        <draggable v-model="col.tasks" item-key="id" :group="'tasks'" :animation="200" class="list">
+          <template #item="{ element: task }">
+            <li>{{ task.title }}</li>
+          </template>
+        </draggable>
+        <button @click="onAddTask(col.id)">Добавить задачу</button>
+      </div>
+    </template>
+  </draggable>
+  <button @click="onAddColumn">Добавить колонку</button>
 </template>
 
 <script setup lang="ts">
-	import { useBoardStore } from '@/stores/board';
-	const board = useBoardStore();
+import draggable from 'vuedraggable'
+import { useBoardStore } from '@/stores/board'
+const board = useBoardStore()
 
-	const onAddColumn = () => {
-		board.addColumn(prompt('Название колонки?') || 'Без названия');
-	}
+const onAddColumn = () => {
+  board.addColumn(prompt('Название колонки?') || 'Без названия')
+}
 
-	const onAddTask = (columnId: string) => {
-		board.addTask(columnId, prompt('Название задачи?') || 'Без названия');
-	}
+const onAddTask = (columnId: string) => {
+  board.addTask(columnId, prompt('Название задачи?') || 'Без названия')
+}
 
-	const onRemoveColumn = (id: string) => {
-		if(confirm('Удалить колонку?')) {
-			board.removeColumn(id);
-		}
-	}
+const onRemoveColumn = (id: string) => {
+  if (confirm('Удалить колонку?')) {
+    board.removeColumn(id)
+  }
+}
 </script>
-<style scoped>
-	.board {
-		display: flex;
-		gap: 1rem;
-	}
 
-	.column {
-		background: #f4f4f4;
-		padding: 1rem;
-		width: 200px;
-		border-radius: 5px;
-	}
+<style scoped>
+.board {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.column {
+  background: #f4f4f4;
+  padding: 1rem;
+  width: 250px;
+  border-radius: 0.5rem;
+  cursor: grab;
+}
+
+.list {
+  list-style: none;
+}
 </style>
