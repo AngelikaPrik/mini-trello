@@ -2,7 +2,6 @@
   <draggable
     v-model="board.columns"
     :group="'columns'"
-    :handle="'.column-handle'"
     item-key="id"
     :animation="500"
     class="board"
