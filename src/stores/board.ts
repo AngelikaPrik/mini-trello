@@ -36,5 +36,9 @@ export const useBoardStore = defineStore('board', () => {
     }
   }
 
-  return { columns, addColumn, addTask }
+  const removeColumn = (columnId: string) => {
+    columns.value = columns.value.filter(col => col.id !== columnId);
+  }
+
+  return { columns, addColumn, addTask, removeColumn }
 })

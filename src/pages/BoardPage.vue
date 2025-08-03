@@ -1,7 +1,10 @@
 <template>
 	<section class='board'>
-		<div v-for='col in columns' :key='col.id' class='column'>
-			<h2>{{ col.title }}</h2>
+		<div v-for='col in board.columns' :key='col.id' class='column'>
+			<h2>
+				{{ col.title }}
+				<button @click="onRemoveColumn(col.id)">✖</button>
+			</h2>
 
 			<ul>
 				<li v-for='task in col.tasks' :key='task.id'>{{ task.title }}</li>
@@ -14,14 +17,20 @@
 
 <script setup lang="ts">
 	import { useBoardStore } from '@/stores/board';
-	const { columns, addColumn, addTask } = useBoardStore();
+	const board = useBoardStore();
 
 	const onAddColumn = () => {
-		addColumn(prompt('Название колонки?') || 'Без названия');
+		board.addColumn(prompt('Название колонки?') || 'Без названия');
 	}
 
 	const onAddTask = (columnId: string) => {
-		addTask(columnId, prompt('Название задачи?') || 'Без названия');
+		board.addTask(columnId, prompt('Название задачи?') || 'Без названия');
+	}
+
+	const onRemoveColumn = (id: string) => {
+		if(confirm('Удалить колонку?')) {
+			board.removeColumn(id);
+		}
 	}
 </script>
 <style scoped>
