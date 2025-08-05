@@ -10,7 +10,7 @@
       <div class="column">
         <h2>
           {{ col.title }}
-          <button @click="onRemoveColumn(col.id)">✖</button>
+          <UiButton danger @click="onRemoveColumn(col.id)">✖</UiButton>
         </h2>
 
         <draggable v-model="col.tasks" item-key="id" :group="'tasks'" :animation="200" class="list">
@@ -23,12 +23,29 @@
     </template>
   </draggable>
   <button @click="onAddColumn">Добавить колонку</button>
+
+  <UiModal
+    v-if="modalOpen"
+    @confirm="onConfirmRemoveColumn"
+    @cancel="modalOpen = false"
+    @close="modalOpen = false"
+  >
+    <template #title>
+      <h2>Удалить колонку?</h2>
+    </template>
+    <p>Ты уверен, что хочешь удалить эту колонку?</p>
+  </UiModal>
 </template>
 
 <script setup lang="ts">
 import draggable from 'vuedraggable'
 import { useBoardStore } from '@/stores/board'
 import UiButton from '@/components/ui/UiButton.vue'
+import UiModal from '@/components/ui/UiModal.vue'
+import { ref } from 'vue'
+
+const modalOpen = ref(false)
+const columnToRemove = ref<string | null>(null)
 
 const board = useBoardStore()
 
@@ -41,9 +58,15 @@ const onAddTask = (columnId: string) => {
 }
 
 const onRemoveColumn = (id: string) => {
-  if (confirm('Удалить колонку?')) {
-    board.removeColumn(id)
+  columnToRemove.value = id
+  modalOpen.value = true
+}
+const onConfirmRemoveColumn = () => {
+  if (columnToRemove.value) {
+    board.removeColumn(columnToRemove.value)
+    columnToRemove.value = null
   }
+  modalOpen.value = false
 }
 </script>
 
