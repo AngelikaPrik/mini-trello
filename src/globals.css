@@ -1,5 +1,19 @@
+/* Minimal reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: 'Inter', sans-serif;
+}
+
+ul,
+ol {
+  list-style: none;
 }
 
 button,
@@ -7,4 +21,56 @@ input,
 select,
 textarea {
   font-family: inherit;
+}
+
+button {
+  all: unset;
+  cursor: pointer;
+}
+
+:root {
+  /* Fonts */
+  --font-base: 'Inter', sans-serif;
+
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-s:  0.875rem;  /* 14px */
+  --font-size-m:  1rem;      /* 16px */
+  --font-size-l:  1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+
+  --font-weight-regular: 200;
+  --font-weight-medium: 300;
+  --font-weight-bold:   400;
+
+  /* Colors */
+  --color-primary: #a4c8f0;
+  --color-danger:  #f3a7a7;
+  --color-success: #b2e3bc;
+  --color-warning: #f9ddb9; 
+  --color-primary: #397deb;
+  --color-danger: #ef4444;
+  --color-bg: #f9f9f9;
+  --color-text: #1f2937;
+
+  /* Spacing */
+  --space-xs: 0.25rem;  /* 4px */
+  --space-s:  0.5rem;   /* 8px */
+  --space-m:  1rem;     /* 16px */
+  --space-l:  1.5rem;   /* 24px */
+  --space-xl: 2rem;     /* 32px */
+  --space-2xl: 3rem;    /* 48px */
+
+  /* Border-radius */
+  --radius-s: 0.25rem;   /* 4px */
+  --radius-m: 0.5rem;    /* 8px */
+  --radius-l: 1rem;      /* 16px */
+
+  /* Z-index */
+  --z-index-base: 0;
+  --z-index-dropdown: 5;
+  --z-index-sticky: 10;
+  --z-index-fixed: 15;
+  --z-index-modal: 20;
+  --z-index-popover: 25;
+  --z-index-toast: 30;
 }

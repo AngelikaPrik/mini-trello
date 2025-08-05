@@ -75,15 +75,16 @@ const onConfirmRemoveColumn = () => {
   width: 80%;
   margin: 0 auto;
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--space-m);
 }
 
 .column {
   background: #f4f4f4;
   padding: 1rem;
   width: 250px;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-m);
   cursor: grab;
 }
 

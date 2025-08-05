@@ -24,28 +24,47 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: var(--z-index-modal);
 }
 
 .wrapper {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
+  background: var(--color-bg);
+  padding: var(--space-l);
+  border-radius: var(--radius-m);
   width: 40%;
+  color: var(--color-text);
+  font-family: var(--font-base);
+  font-size: var(--font-size-m);
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: var(--space-m);
+  margin-top: var(--space-m);
+}
+
+button {
+  font-size: var(--font-size-s);
+  font-family: inherit;
+  padding: var(--space-xs) var(--space-m);
+  border: none;
+  border-radius: var(--radius-s);
+  background: var(--color-gray-300);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--color-gray-500);
 }
 
 button.danger {
-  background: #e53935;
+  background: var(--color-danger);
   color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+}
+
+button.danger:hover {
+  background: #d03b3b;
 }
 </style>

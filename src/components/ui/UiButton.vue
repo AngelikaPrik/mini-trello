@@ -17,34 +17,28 @@ defineProps<{
 
 <style scoped>
 .button {
-  padding: 0.5em 1em;
-  font-size: 14px;
+  padding: var(--space-s) var(--space-m);
+  font-size: var(--font-size-s);
+  font-family: var(--font-base);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-s);
   cursor: pointer;
-  background: #e0e0e0;
-  transition: background 0.2s;
-}
-
-.button:hover {
-  background: #d5d5d5;
+  background: var(--color-gray-300);
+  color: var(--color-text);
+  transition: background 0.2s ease;
 }
 
 .button--primary {
-  background-color: #42b983;
+  background-color: var(--color-primary);
   color: white;
 }
 
-.button--primary:hover {
-  background-color: #36996e;
-}
-
 .button--danger {
-  background-color: #e53935;
+  background-color: var(--color-danger);
   color: white;
 }
 
 .button--danger:hover {
-  background-color: #c62828;
+  filter: brightness(0.9);
 }
 </style>
