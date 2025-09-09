@@ -111,13 +111,15 @@ onBeforeUnmount(() => {
   color: var(--color-text);
   font-family: var(--font-base);
   font-size: var(--font-size-m);
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--space-m);
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-m);
-  margin-top: var(--space-m);
 }
 
 .header {
