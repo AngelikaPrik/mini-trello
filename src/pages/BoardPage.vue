@@ -3,23 +3,16 @@
     v-model="board.columns"
     :group="'columns'"
     item-key="id"
-    :animation="500"
+    :animation="400"
     class="board"
   >
     <template #item="{ element: col }">
-      <div class="column">
-        <h2>
-          {{ col.title }}
-          <UiButton danger @click="onRemoveColumn(col.id)">✖</UiButton>
-        </h2>
-
-        <draggable v-model="col.tasks" item-key="id" :group="'tasks'" :animation="200" class="list">
-          <template #item="{ element: task }">
-            <li>{{ task.title }}</li>
-          </template>
-        </draggable>
-        <UiButton @click="onAddTask(col.id)">Добавить задачу</UiButton>
-      </div>
+      <ColumnItem
+        :column="col"
+        @rename="onChangeColumnName"
+        @remove="onRemoveColumn"
+        @add-task="onAddTask"
+      />
     </template>
   </draggable>
   <button @click="onAddColumn">Добавить колонку</button>
@@ -40,12 +33,12 @@
 <script setup lang="ts">
 import draggable from 'vuedraggable'
 import { useBoardStore } from '@/stores/board'
-import UiButton from '@/components/ui/UiButton.vue'
-import UiModal from '@/components/ui/UiModal.vue'
-import { ref } from 'vue'
 
+import { ref } from 'vue'
+import { ColumnItem, UiModal } from '@/components/ui'
 const modalOpen = ref(false)
 const columnToRemove = ref<string | null>(null)
+const activeDropdown = ref<string | null>(null)
 
 const board = useBoardStore()
 
@@ -68,6 +61,12 @@ const onConfirmRemoveColumn = () => {
   }
   modalOpen.value = false
 }
+
+const onChangeColumnName = (id: string) => {
+  const title = prompt('Новое название?')
+  if (title) board.renameColumn(id, title)
+  activeDropdown.value = null
+}
 </script>
 
 <style scoped>
@@ -78,17 +77,6 @@ const onConfirmRemoveColumn = () => {
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--space-m);
-}
-
-.column {
-  background: #f4f4f4;
-  padding: 1rem;
-  width: 250px;
-  border-radius: var(--radius-m);
-  cursor: grab;
-}
-
-.list {
-  list-style: none;
+  margin-top: var(--space-l);
 }
 </style>

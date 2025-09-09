@@ -23,9 +23,13 @@ defineProps<{
   border: none;
   border-radius: var(--radius-s);
   cursor: pointer;
-  background: var(--color-gray-300);
+  background: #ffffffa7;
   color: var(--color-text);
   transition: background 0.2s ease;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .button--primary {

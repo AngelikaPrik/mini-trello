@@ -46,9 +46,16 @@ export const useBoardStore = defineStore('board', () => {
     }
   }
 
+  const renameColumn = (columnId: string, columnTitle: string) => {
+    const currentColumn = columns.value.find((item) => item.id === columnId)
+    if (currentColumn) {
+      currentColumn.title = columnTitle
+    }
+  }
+
   const removeColumn = (columnId: string) => {
     columns.value = columns.value.filter((col) => col.id !== columnId)
   }
 
-  return { columns, addColumn, addTask, removeColumn }
+  return { columns, addColumn, addTask, removeColumn, renameColumn }
 })
