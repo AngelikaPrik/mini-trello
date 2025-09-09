@@ -8,6 +8,7 @@
   >
     <template #item="{ element: col }">
       <ColumnItem
+        :key="col.id"
         :column="col"
         @rename="onChangeColumnName"
         @remove="onRemoveColumn"
@@ -19,13 +20,15 @@
 
   <UiModal
     v-if="modalOpen"
+    confirmText="Удалить"
+    cancelText="Отмена"
+    confirmVariant="danger"
+    :showConfirm="true"
     @confirm="onConfirmRemoveColumn"
     @cancel="modalOpen = false"
     @close="modalOpen = false"
   >
-    <template #title>
-      <h2>Удалить колонку?</h2>
-    </template>
+    <template #title><h2>Удалить колонку?</h2></template>
     <p>Ты уверен, что хочешь удалить эту колонку?</p>
   </UiModal>
 </template>
@@ -43,17 +46,21 @@ const activeDropdown = ref<string | null>(null)
 const board = useBoardStore()
 
 const onAddColumn = () => {
-  board.addColumn(prompt('Название колонки?') || 'Без названия')
+  const title = prompt('Название колонки?')
+  if (title !== null) {
+    board.addColumn(title || 'Без названия')
+  }
 }
 
-const onAddTask = (columnId: string) => {
-  board.addTask(columnId, prompt('Название задачи?') || 'Без названия')
+const onAddTask = ({ id, title }: { id: string; title: string }) => {
+  board.addTask(id, title)
 }
 
 const onRemoveColumn = (id: string) => {
   columnToRemove.value = id
   modalOpen.value = true
 }
+
 const onConfirmRemoveColumn = () => {
   if (columnToRemove.value) {
     board.removeColumn(columnToRemove.value)

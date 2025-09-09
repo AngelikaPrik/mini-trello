@@ -1,5 +1,6 @@
 <template>
   <button
+    type="button"
     class="button"
     :class="{ 'button--primary': primary, 'button--danger': danger }"
     @click="$emit('click')"
@@ -12,6 +13,10 @@
 defineProps<{
   primary?: boolean
   danger?: boolean
+}>()
+
+defineEmits<{
+  (e: 'click'): void
 }>()
 </script>
 
