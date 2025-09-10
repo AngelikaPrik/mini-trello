@@ -1,61 +1,111 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { IColumn } from '@/types'
+import { supabase } from '@/lib/supabase'
+import type { UserResponse } from '@supabase/supabase-js'
 
 export const useBoardStore = defineStore('board', () => {
-  const columns = ref<IColumn[]>([
-    {
-      id: 'ca5fdb63-c100-4a59-9e94-78c37ed5c67b',
-      title: 'что сделать?',
-      tasks: [
-        {
-          id: '54ca3ac3-9a4e-47f2-99d5-e6fc124146dd',
-          title: 'Купить губки',
-        },
-      ],
-    },
-    {
-      id: '48b490b3-af82-4f9f-a083-9d06b0313918',
-      title: 'что в процессе?',
-      tasks: [
-        {
-          id: '28b97bb5-4312-4453-86ae-2dc54310f75f',
-          title: 'Смена ВУ',
-        },
-      ],
-    },
-    {
-      id: 'e083be12-9351-43fb-b694-a52b93e0a49b',
-      title: 'что сделано?',
-      tasks: [],
-    },
-  ])
+  const boardId = ref<string | null>(null)
+  const columns = ref<IColumn[]>([])
 
-  const addColumn = (title: string) => {
-    columns.value.push({
-      id: crypto.randomUUID(),
-      title,
-      tasks: [],
-    })
-  }
+  const loadBoard = async () => {
+    const res: UserResponse = await supabase.auth.getUser()
+    const user = res.data.user
 
-  const addTask = (columnId: string, taskTitle: string) => {
-    const currentColumn = columns.value.find((item) => item.id === columnId)
-    if (currentColumn) {
-      currentColumn.tasks.push({ id: crypto.randomUUID(), title: taskTitle })
+    if (!user) {
+      columns.value = []
+      return
     }
-  }
 
-  const renameColumn = (columnId: string, columnTitle: string) => {
-    const currentColumn = columns.value.find((item) => item.id === columnId)
-    if (currentColumn) {
-      currentColumn.title = columnTitle
+    const { data: boards, error: boardError } = await supabase
+      .from('boards')
+      .select('id')
+      .eq('owner_id', user.id)
+      .limit(1)
+
+    if (boardError) throw boardError
+
+    if (!boards || boards.length === 0) {
+      const { data: createdBoard, error: createError } = await supabase
+        .from('boards')
+        .insert({ owner_id: user.id, title: 'Моя доска' })
+        .select('id')
+        .single()
+      if (createError) throw createError
+      boardId.value = createdBoard.id
+    } else {
+      boardId.value = boards[0].id
     }
+
+    const { data: cols, error: colError } = await supabase
+      .from('columns')
+      .select('id, title, order')
+      .eq('board_id', boardId.value)
+      .order('order', { ascending: true })
+    if (colError) throw colError
+
+    const { data: tasks, error: taskError } = await supabase
+      .from('tasks')
+      .select('id, title, column_id, order')
+      .in('column_id', cols?.map((c) => c.id) ?? [])
+      .order('order', { ascending: true })
+    if (taskError) throw taskError
+
+    columns.value = (cols ?? []).map((col) => ({
+      id: col.id,
+      title: col.title,
+      tasks: (tasks ?? []).filter((t) => t.column_id === col.id),
+      order: col.order,
+    }))
   }
 
-  const removeColumn = (columnId: string) => {
-    columns.value = columns.value.filter((col) => col.id !== columnId)
+  const addColumn = async (title: string) => {
+    if (!boardId.value) return
+
+    const order = (columns.value.at(-1)?.order ?? -1) + 1
+
+    const { data, error } = await supabase
+      .from('columns')
+      .insert({ board_id: boardId.value, title, order })
+      .select('id, title')
+      .single()
+    if (error) throw error
+
+    columns.value.push({ id: data.id, title: data.title, tasks: [], order })
   }
 
-  return { columns, addColumn, addTask, removeColumn, renameColumn }
+  const addTask = async (column_id: string, taskTitle: string) => {
+    const column = columns.value.find((c) => c.id === column_id)
+    if (!column) return
+    const order = (column.tasks.at(-1)?.order ?? -1) + 1
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert({ column_id, title: taskTitle, order })
+      .select('id, title, column_id')
+      .single()
+    if (error) throw error
+
+    column.tasks.push({ id: data.id, title: data.title, order })
+  }
+
+  const renameColumn = async (columnId: string, columnTitle: string) => {
+    const { error } = await supabase
+      .from('columns')
+      .update({ title: columnTitle })
+      .eq('id', columnId)
+    if (error) throw error
+
+    const col = columns.value.find((c) => c.id === columnId)
+    if (col) col.title = columnTitle
+  }
+
+  const removeColumn = async (columnId: string) => {
+    const { error } = await supabase.from('columns').delete().eq('id', columnId)
+    if (error) throw error
+
+    columns.value = columns.value.filter((c) => c.id !== columnId)
+  }
+
+  return { columns, loadBoard, addColumn, addTask, renameColumn, removeColumn }
 })

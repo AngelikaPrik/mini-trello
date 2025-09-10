@@ -37,13 +37,17 @@
 import draggable from 'vuedraggable'
 import { useBoardStore } from '@/stores/board'
 
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { ColumnItem, UiModal } from '@/components/ui'
 const modalOpen = ref(false)
 const columnToRemove = ref<string | null>(null)
 const activeDropdown = ref<string | null>(null)
 
 const board = useBoardStore()
+
+onMounted(() => {
+  board.loadBoard()
+})
 
 const onAddColumn = () => {
   const title = prompt('Название колонки?')
