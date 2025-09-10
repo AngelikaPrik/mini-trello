@@ -38,7 +38,8 @@ import draggable from 'vuedraggable'
 import { useBoardStore } from '@/stores/board'
 
 import { onMounted, ref } from 'vue'
-import { ColumnItem, UiModal } from '@/components/ui'
+import { UiModal } from '@/components/ui'
+import { ColumnItem } from '@/components/widgets'
 const modalOpen = ref(false)
 const columnToRemove = ref<string | null>(null)
 const activeDropdown = ref<string | null>(null)

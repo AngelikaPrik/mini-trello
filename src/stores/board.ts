@@ -1,11 +1,12 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { IColumn } from '@/types'
+import type { IBoard, IColumn } from '@/types'
 import { supabase } from '@/lib/supabase'
 import type { UserResponse } from '@supabase/supabase-js'
 
 export const useBoardStore = defineStore('board', () => {
   const boardId = ref<string | null>(null)
+  const boards = ref<IBoard[]>([])
   const columns = ref<IColumn[]>([])
 
   const loadBoard = async () => {
@@ -13,19 +14,20 @@ export const useBoardStore = defineStore('board', () => {
     const user = res.data.user
 
     if (!user) {
-      columns.value = []
+      boards.value = []
       return
     }
 
-    const { data: boards, error: boardError } = await supabase
+    const { data: boardsRes, error: boardError } = await supabase
       .from('boards')
-      .select('id')
+      .select('id, title')
       .eq('owner_id', user.id)
       .limit(1)
 
     if (boardError) throw boardError
+    boards.value = boardsRes ?? []
 
-    if (!boards || boards.length === 0) {
+    if (!boards.value || boards.value.length === 0) {
       const { data: createdBoard, error: createError } = await supabase
         .from('boards')
         .insert({ owner_id: user.id, title: 'Моя доска' })
@@ -34,7 +36,7 @@ export const useBoardStore = defineStore('board', () => {
       if (createError) throw createError
       boardId.value = createdBoard.id
     } else {
-      boardId.value = boards[0].id
+      boardId.value = boards.value[0].id
     }
 
     const { data: cols, error: colError } = await supabase
@@ -107,5 +109,5 @@ export const useBoardStore = defineStore('board', () => {
     columns.value = columns.value.filter((c) => c.id !== columnId)
   }
 
-  return { columns, loadBoard, addColumn, addTask, renameColumn, removeColumn }
+  return { boards, columns, loadBoard, addColumn, addTask, renameColumn, removeColumn }
 })

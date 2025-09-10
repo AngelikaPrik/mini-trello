@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import draggable from 'vuedraggable'
-import { UiButton, UiModal, UiInput } from './index'
+import { UiButton, UiModal, UiInput } from '@/components/ui'
 import type { IColumn } from '@/types'
 import { ref } from 'vue'
 
