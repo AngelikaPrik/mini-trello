@@ -4,6 +4,7 @@
       <li v-for="b in board.boards" :key="b.id">
         {{ b.title }}
       </li>
+      <li @click="onAddBoard"></li>
     </ul>
     <button v-if="!user" @click="loginGithub">Войти через GitHub</button>
     <button v-if="user" @click="logout">Выйти</button>
@@ -29,6 +30,13 @@ async function loginGithub() {
 async function logout() {
   await supabase.auth.signOut()
 }
+
+const onAddBoard = () => {
+  const title = prompt('Название доски?')
+  if (title !== null) {
+    board.addBoard(title || 'Без названия')
+  }
+}
 </script>
 
 <style scoped>
@@ -53,9 +61,26 @@ async function logout() {
   border-radius: var(--space-s);
   background: #ffffff;
   cursor: pointer;
+  position: relative;
 }
 
-.boards-list li:hover {
+.boards-list li:hover:not(:last-child) {
   opacity: 0.5;
+}
+
+.boards-list li:last-child {
+  height: auto;
+  min-width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
+
+.boards-list li:last-child::before {
+  content: '+';
+}
+
+.boards-list li:last-child:hover::before {
+  content: 'Создать доску';
 }
 </style>

@@ -22,7 +22,6 @@ export const useBoardStore = defineStore('board', () => {
       .from('boards')
       .select('id, title')
       .eq('owner_id', user.id)
-      .limit(1)
 
     if (boardError) throw boardError
     boards.value = boardsRes ?? []
@@ -59,6 +58,20 @@ export const useBoardStore = defineStore('board', () => {
       tasks: (tasks ?? []).filter((t) => t.column_id === col.id),
       order: col.order,
     }))
+  }
+
+  const addBoard = async (title: string) => {
+    const res: UserResponse = await supabase.auth.getUser()
+    const user = res.data.user
+
+    const { data, error } = await supabase
+      .from('boards')
+      .insert({ owner_id: user?.id, title: title })
+      .select('id, title')
+      .single()
+    if (error) throw error
+
+    boards.value.push({ id: data.id, title: data.title })
   }
 
   const addColumn = async (title: string) => {
@@ -109,5 +122,5 @@ export const useBoardStore = defineStore('board', () => {
     columns.value = columns.value.filter((c) => c.id !== columnId)
   }
 
-  return { boards, columns, loadBoard, addColumn, addTask, renameColumn, removeColumn }
+  return { boards, columns, loadBoard, addBoard, addColumn, addTask, renameColumn, removeColumn }
 })
