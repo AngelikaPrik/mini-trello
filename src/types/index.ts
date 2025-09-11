@@ -14,4 +14,5 @@ export interface ITask {
   title: string
   description?: string
   order: number
+  columnId: string
 }

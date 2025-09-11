@@ -2,41 +2,41 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { IBoard, IColumn } from '@/types'
 import { supabase } from '@/lib/supabase'
-import type { UserResponse } from '@supabase/supabase-js'
+import type { User } from '@supabase/supabase-js'
 
 export const useBoardStore = defineStore('board', () => {
+  const user = ref<User | null>()
   const boardId = ref<string | null>(null)
   const boards = ref<IBoard[]>([])
   const columns = ref<IColumn[]>([])
 
-  const loadBoard = async () => {
-    const res: UserResponse = await supabase.auth.getUser()
-    const user = res.data.user
-
-    if (!user) {
+  const loadBoards = async () => {
+    const res = await supabase.auth.getUser()
+    user.value = res.data.user
+    if (!user.value) {
       boards.value = []
       return
     }
 
-    const { data: boardsRes, error: boardError } = await supabase
+    const { data, error } = await supabase
       .from('boards')
-      .select('id, title')
-      .eq('owner_id', user.id)
+      .select('id, title, created_at')
+      .eq('owner_id', user.value.id)
+      .order('created_at', { ascending: true })
 
-    if (boardError) throw boardError
-    boards.value = boardsRes ?? []
+    if (error) throw error
+    boards.value = data ?? []
 
-    if (!boards.value || boards.value.length === 0) {
-      const { data: createdBoard, error: createError } = await supabase
-        .from('boards')
-        .insert({ owner_id: user.id, title: 'Моя доска' })
-        .select('id')
-        .single()
-      if (createError) throw createError
-      boardId.value = createdBoard.id
-    } else {
-      boardId.value = boards.value[0].id
-    }
+    await setBoard(boards.value[0].id)
+  }
+
+  const setBoard = async (id: string) => {
+    boardId.value = id
+    await loadBoard()
+  }
+
+  const loadBoard = async () => {
+    if (!boardId.value) return
 
     const { data: cols, error: colError } = await supabase
       .from('columns')
@@ -55,28 +55,34 @@ export const useBoardStore = defineStore('board', () => {
     columns.value = (cols ?? []).map((col) => ({
       id: col.id,
       title: col.title,
-      tasks: (tasks ?? []).filter((t) => t.column_id === col.id),
       order: col.order,
+      tasks: (tasks ?? [])
+        .filter((t) => t.column_id === col.id)
+        .map((t) => ({
+          id: t.id,
+          title: t.title,
+          order: t.order,
+          columnId: t.column_id,
+        })),
     }))
   }
 
   const addBoard = async (title: string) => {
-    const res: UserResponse = await supabase.auth.getUser()
-    const user = res.data.user
+    if (!user.value) return
 
     const { data, error } = await supabase
       .from('boards')
-      .insert({ owner_id: user?.id, title: title })
+      .insert({ owner_id: user.value.id, title })
       .select('id, title')
       .single()
     if (error) throw error
 
-    boards.value.push({ id: data.id, title: data.title })
+    boards.value.push(data)
+    return data.id
   }
 
   const addColumn = async (title: string) => {
     if (!boardId.value) return
-
     const order = (columns.value.at(-1)?.order ?? -1) + 1
 
     const { data, error } = await supabase
@@ -97,11 +103,16 @@ export const useBoardStore = defineStore('board', () => {
     const { data, error } = await supabase
       .from('tasks')
       .insert({ column_id, title: taskTitle, order })
-      .select('id, title, column_id')
+      .select('id, title, column_id, order')
       .single()
     if (error) throw error
 
-    column.tasks.push({ id: data.id, title: data.title, order })
+    column.tasks.push({
+      id: data.id,
+      title: data.title,
+      order: data.order,
+      columnId: column_id,
+    })
   }
 
   const renameColumn = async (columnId: string, columnTitle: string) => {
@@ -122,5 +133,60 @@ export const useBoardStore = defineStore('board', () => {
     columns.value = columns.value.filter((c) => c.id !== columnId)
   }
 
-  return { boards, columns, loadBoard, addBoard, addColumn, addTask, renameColumn, removeColumn }
+  const changeColumnsOrder = async () => {
+    if (!boardId.value) return
+
+    const payload = columns.value.map((col, index) => ({
+      id: col.id,
+      board_id: boardId.value,
+      order: index,
+      title: col.title,
+    }))
+
+    const { error } = await supabase
+      .from('columns')
+      .upsert(payload, { onConflict: 'id', ignoreDuplicates: false })
+    if (error) {
+      console.error(error)
+      await Promise.all(
+        columns.value.map((col, i) =>
+          supabase.from('columns').update({ order: i }).eq('id', col.id),
+        ),
+      )
+    }
+
+    columns.value.forEach((c, i) => (c.order = i))
+  }
+
+  const changeTasksOrder = async () => {
+    await Promise.all(
+      columns.value.flatMap((col) =>
+        col.tasks.map((task, index) =>
+          supabase.from('tasks').update({ order: index, column_id: col.id }).eq('id', task.id),
+        ),
+      ),
+    )
+
+    columns.value.forEach((col) => {
+      col.tasks.forEach((task, i) => {
+        task.order = i
+        task.columnId = col.id
+      })
+    })
+  }
+
+  return {
+    boards,
+    columns,
+    loadBoards,
+    setBoard,
+    loadBoard,
+    addBoard,
+    addColumn,
+    addTask,
+    renameColumn,
+    removeColumn,
+    changeColumnsOrder,
+    changeTasksOrder,
+  }
 })

@@ -20,10 +20,11 @@
 
         <draggable
           v-model="column.tasks"
-          item-key="id"
-          :group="'tasks'"
-          :animation="400"
+          :group="{ name: 'tasks', pull: true, put: true }"
           class="list"
+          :animation="400"
+          item-key="id"
+          @end="emit('reorder-tasks')"
         >
           <template #item="{ element: task }">
             <li>{{ task.title }}</li>
@@ -58,10 +59,11 @@ import { ref } from 'vue'
 const props = defineProps<{ column: IColumn }>()
 
 const emit = defineEmits<{
+  (e: 'add-task', payload: { columnId: string; title: string }): void
   (e: 'rename', id: string): void
   (e: 'remove', id: string): void
-  (e: 'add-task', payload: { id: string; title: string }): void
   (e: 'color', id: string): void
+  (e: 'reorder-tasks'): void
 }>()
 
 const hovered = ref(false)
@@ -80,7 +82,7 @@ const openAddTaskModal = () => {
 
 const createTask = () => {
   const title = newTaskTitle.value.trim() || 'Без названия'
-  emit('add-task', { id: props.column.id, title })
+  emit('add-task', { columnId: props.column.id, title })
   addTaskOpen.value = false
 }
 </script>

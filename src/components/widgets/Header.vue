@@ -6,8 +6,8 @@
       </li>
       <li @click="onAddBoard"></li>
     </ul>
-    <button v-if="!user" @click="loginGithub">Войти через GitHub</button>
-    <button v-if="user" @click="logout">Выйти</button>
+    <UiButton v-if="!user" @click="loginGithub">Войти через GitHub</UiButton>
+    <UiButton v-if="user" @click="logout">Выйти</UiButton>
   </header>
 </template>
 
@@ -15,6 +15,7 @@
 import { supabase } from '@/lib/supabase'
 import { useBoardStore } from '@/stores/board'
 import type { User } from '@supabase/supabase-js'
+import { UiButton } from '../ui'
 
 defineProps<{ user: User | null }>()
 
@@ -42,7 +43,7 @@ const onAddBoard = () => {
 <style scoped>
 .header {
   padding: var(--space-l);
-  background: #a4c7f053;
+  background: #e1ecfa;
   width: 90%;
   margin: 0 auto;
   border-radius: 0 0 10px 10px;
@@ -71,9 +72,10 @@ const onAddBoard = () => {
 .boards-list li:last-child {
   height: auto;
   min-width: 40px;
+  width: fit-content;
   display: flex;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
 }
 
 .boards-list li:last-child::before {

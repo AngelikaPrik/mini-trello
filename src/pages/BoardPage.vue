@@ -5,14 +5,15 @@
     item-key="id"
     :animation="400"
     class="board"
+    @end="onChangeColumnsOrder"
   >
     <template #item="{ element: col }">
       <ColumnItem
-        :key="col.id"
         :column="col"
         @rename="onChangeColumnName"
         @remove="onRemoveColumn"
         @add-task="onAddTask"
+        @reorder-tasks="onChangeTasksOrder"
       />
     </template>
   </draggable>
@@ -47,7 +48,7 @@ const activeDropdown = ref<string | null>(null)
 const board = useBoardStore()
 
 onMounted(() => {
-  board.loadBoard()
+  board.loadBoards()
 })
 
 const onAddColumn = () => {
@@ -57,8 +58,8 @@ const onAddColumn = () => {
   }
 }
 
-const onAddTask = ({ id, title }: { id: string; title: string }) => {
-  board.addTask(id, title)
+const onAddTask = ({ columnId, title }: { columnId: string; title: string }) => {
+  board.addTask(columnId, title)
 }
 
 const onRemoveColumn = (id: string) => {
@@ -78,6 +79,14 @@ const onChangeColumnName = (id: string) => {
   const title = prompt('Новое название?')
   if (title) board.renameColumn(id, title)
   activeDropdown.value = null
+}
+
+const onChangeColumnsOrder = () => {
+  board.changeColumnsOrder()
+}
+
+const onChangeTasksOrder = () => {
+  board.changeTasksOrder()
 }
 </script>
 
