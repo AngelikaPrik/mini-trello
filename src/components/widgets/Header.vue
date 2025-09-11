@@ -43,10 +43,9 @@ const onAddBoard = () => {
 <style scoped>
 .header {
   padding: var(--space-l);
-  background: #e1ecfa;
+  border-bottom: 2px solid #ecbb9a;
   width: 90%;
   margin: 0 auto;
-  border-radius: 0 0 10px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;

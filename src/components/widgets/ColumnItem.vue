@@ -16,7 +16,7 @@
           </div>
         </div>
 
-        <h2>{{ column.title }}</h2>
+        <h2 class="title">{{ column.title }}</h2>
 
         <draggable
           v-model="column.tasks"
@@ -27,7 +27,7 @@
           @end="emit('reorder-tasks')"
         >
           <template #item="{ element: task }">
-            <li>{{ task.title }}</li>
+            <li class="task">{{ task.title }}</li>
           </template>
         </draggable>
       </div>
@@ -88,11 +88,18 @@ const createTask = () => {
 </script>
 
 <style scoped>
+.title {
+  text-transform: lowercase;
+  font-size: var(--font-size-l);
+}
+
+.title::first-letter {
+  text-transform: capitalize;
+}
+
 .column {
-  background: #f4f4f4;
   padding: 1rem;
   width: 250px;
-  border-radius: var(--radius-m);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -140,5 +147,14 @@ const createTask = () => {
 .list {
   list-style: none;
   padding: var(--space-m) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+}
+
+.task {
+  padding: var(--space-s) var(--space-m);
+  border-radius: var(--radius-m);
+  background: #fff;
 }
 </style>
