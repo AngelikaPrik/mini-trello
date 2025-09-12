@@ -24,7 +24,6 @@ defineEmits<{
 .button {
   padding: var(--space-s) var(--space-m);
   font-size: var(--font-size-s);
-  font-family: var(--font-base);
   border: none;
   border-radius: var(--radius-s);
   cursor: pointer;

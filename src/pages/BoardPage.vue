@@ -1,23 +1,25 @@
 <template>
-  <draggable
-    v-model="board.columns"
-    :group="'columns'"
-    item-key="id"
-    :animation="400"
-    class="board"
-    @end="onChangeColumnsOrder"
-  >
-    <template #item="{ element: col }">
-      <ColumnItem
-        :column="col"
-        @rename="onChangeColumnName"
-        @remove="onRemoveColumn"
-        @add-task="onAddTask"
-        @reorder-tasks="onChangeTasksOrder"
-      />
-    </template>
-  </draggable>
-  <button @click="onAddColumn">Добавить колонку</button>
+  <div class="wrapper">
+    <draggable
+      v-model="board.columns"
+      :group="{ name: 'columns', pull: true, put: false }"
+      item-key="id"
+      :animation="400"
+      class="board"
+      @end="onChangeColumnsOrder"
+    >
+      <template #item="{ element: col }">
+        <ColumnItem
+          :column="col"
+          @rename="onChangeColumnName"
+          @remove="onRemoveColumn"
+          @add-task="onAddTask"
+          @reorder-tasks="onChangeTasksOrder"
+        />
+      </template>
+    </draggable>
+    <UiButton @click="onAddColumn">Добавить колонку</UiButton>
+  </div>
 
   <UiModal
     v-if="modalOpen"
@@ -39,7 +41,7 @@ import draggable from 'vuedraggable'
 import { useBoardStore } from '@/stores/board'
 
 import { onMounted, ref } from 'vue'
-import { UiModal } from '@/components/ui'
+import { UiButton, UiModal } from '@/components/ui'
 import { ColumnItem } from '@/components/widgets'
 const modalOpen = ref(false)
 const columnToRemove = ref<string | null>(null)
@@ -91,13 +93,19 @@ const onChangeTasksOrder = () => {
 </script>
 
 <style scoped>
-.board {
-  width: 80%;
+.wrapper {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-l);
+  width: 90%;
   margin: 0 auto;
+  margin-top: var(--space-l);
+}
+
+.board {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: var(--space-m);
-  margin-top: var(--space-l);
+  gap: var(--space-l);
 }
 </style>

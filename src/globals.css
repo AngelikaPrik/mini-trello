@@ -40,8 +40,8 @@ button {
   --font-size-xl: 1.25rem;   /* 20px */
 
   --font-weight-regular: 200;
-  --font-weight-medium: 300;
-  --font-weight-bold:   400;
+  --font-weight-medium: 400;
+  --font-weight-bold: 700;
 
   /* Colors */
   --color-primary: #a4c8f0;

@@ -109,7 +109,6 @@ onBeforeUnmount(() => {
   border-radius: var(--radius-m);
   width: 40%;
   color: var(--color-text);
-  font-family: var(--font-base);
   font-size: var(--font-size-m);
   display: flex;
   flex-direction: column;

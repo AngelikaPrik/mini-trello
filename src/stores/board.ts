@@ -47,7 +47,7 @@ export const useBoardStore = defineStore('board', () => {
 
     const { data: tasks, error: taskError } = await supabase
       .from('tasks')
-      .select('id, title, column_id, order')
+      .select('id, title, column_id, order, tag')
       .in('column_id', cols?.map((c) => c.id) ?? [])
       .order('order', { ascending: true })
     if (taskError) throw taskError
@@ -63,6 +63,7 @@ export const useBoardStore = defineStore('board', () => {
           title: t.title,
           order: t.order,
           columnId: t.column_id,
+          tag: t.tag,
         })),
     }))
   }

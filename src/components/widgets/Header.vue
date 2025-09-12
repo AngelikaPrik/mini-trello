@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <ul v-if="user" class="boards-list">
-      <li v-for="b in board.boards" :key="b.id">
+      <li v-for="b in board.boards" :key="b.id" @click="() => onSwitchBoard(b.id)">
         {{ b.title }}
       </li>
       <li @click="onAddBoard"></li>
@@ -9,13 +9,31 @@
     <UiButton v-if="!user" @click="loginGithub">Войти через GitHub</UiButton>
     <UiButton v-if="user" @click="logout">Выйти</UiButton>
   </header>
+
+  <UiModal
+    v-if="addTaskOpen"
+    confirmText="Добавить"
+    cancelText="Отмена"
+    confirmVariant="primary"
+    :showConfirm="true"
+    @confirm="createBoard"
+    @cancel="addTaskOpen = false"
+    @close="addTaskOpen = false"
+  >
+    <template #title><h2>Новая доска</h2></template>
+    <UiInput v-model="newBoardTitle" placeholder="Название доски" autofocus />
+  </UiModal>
 </template>
 
 <script setup lang="ts">
 import { supabase } from '@/lib/supabase'
 import { useBoardStore } from '@/stores/board'
 import type { User } from '@supabase/supabase-js'
-import { UiButton } from '../ui'
+import { UiButton, UiInput, UiModal } from '../ui'
+import { ref } from 'vue'
+
+const addTaskOpen = ref(false)
+const newBoardTitle = ref('')
 
 defineProps<{ user: User | null }>()
 
@@ -33,10 +51,18 @@ async function logout() {
 }
 
 const onAddBoard = () => {
-  const title = prompt('Название доски?')
-  if (title !== null) {
-    board.addBoard(title || 'Без названия')
-  }
+  newBoardTitle.value = ''
+  addTaskOpen.value = true
+}
+
+const createBoard = () => {
+  const title = newBoardTitle.value.trim() || 'Без названия'
+  board.addBoard(title)
+  addTaskOpen.value = false
+}
+
+const onSwitchBoard = (id: string) => {
+  board.setBoard(id)
 }
 </script>
 

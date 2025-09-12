@@ -24,7 +24,6 @@ defineEmits<{
 .input {
   padding: var(--space-s) var(--space-m);
   font-size: var(--font-size-s);
-  font-family: var(--font-base);
   border: 1px solid #ccc;
   border-radius: var(--radius-s);
   outline: none;

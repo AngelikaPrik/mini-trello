@@ -15,4 +15,5 @@ export interface ITask {
   description?: string
   order: number
   columnId: string
+  tag?: string
 }
