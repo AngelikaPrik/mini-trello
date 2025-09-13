@@ -31,6 +31,9 @@ import { useBoardStore } from '@/stores/board'
 import type { User } from '@supabase/supabase-js'
 import { UiButton, UiInput, UiModal } from '../ui'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const addTaskOpen = ref(false)
 const newBoardTitle = ref('')
@@ -62,7 +65,7 @@ const createBoard = () => {
 }
 
 const onSwitchBoard = (id: string) => {
-  board.setBoard(id)
+  router.push({ name: 'board', params: { id } })
 }
 </script>
 

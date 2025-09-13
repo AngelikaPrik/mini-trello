@@ -40,18 +40,29 @@
 import draggable from 'vuedraggable'
 import { useBoardStore } from '@/stores/board'
 
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { UiButton, UiModal } from '@/components/ui'
 import { ColumnItem } from '@/components/widgets'
+import { useRoute } from 'vue-router'
 const modalOpen = ref(false)
 const columnToRemove = ref<string | null>(null)
 const activeDropdown = ref<string | null>(null)
 
 const board = useBoardStore()
+const route = useRoute()
 
 onMounted(() => {
-  board.loadBoards()
+  board.loadBoards();
+
+  if (route.params.id) {
+    board.setBoard(route.params.id as string)
+  }
 })
+
+watch(
+  () => route.params.id,
+  (id) => { if (id) board.setBoard(id as string) }
+)
 
 const onAddColumn = () => {
   const title = prompt('Название колонки?')

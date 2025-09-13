@@ -26,8 +26,6 @@ export const useBoardStore = defineStore('board', () => {
 
     if (error) throw error
     boards.value = data ?? []
-
-    await setBoard(boards.value[0].id)
   }
 
   const setBoard = async (id: string) => {
