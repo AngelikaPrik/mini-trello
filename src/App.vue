@@ -11,8 +11,10 @@ import { supabase } from '@/lib/supabase'
 import { ref, onMounted } from 'vue'
 import { Header } from '@/components/widgets'
 import type { User } from '@supabase/supabase-js'
+import { useRouter } from 'vue-router'
 
 const user = ref<User | null>(null)
+const router = useRouter()
 
 onMounted(async () => {
   const { data } = await supabase.auth.getUser()
@@ -20,6 +22,10 @@ onMounted(async () => {
 
   supabase.auth.onAuthStateChange((_event, session) => {
     user.value = session?.user ?? null
+
+    if (!session?.user) {
+      router.push('/')
+    }
   })
 })
 </script>

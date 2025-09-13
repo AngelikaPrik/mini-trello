@@ -18,7 +18,8 @@
         />
       </template>
     </draggable>
-    <UiButton @click="onAddColumn">Добавить колонку</UiButton>
+    <UiButton v-if="board.activeBoard" @click="onAddColumn">Добавить колонку</UiButton>
+    <div v-if="!board.activeBoard">Пожалуйста, создайте доску или выберите из уже созданных</div>
   </div>
 
   <UiModal
@@ -52,7 +53,7 @@ const board = useBoardStore()
 const route = useRoute()
 
 onMounted(() => {
-  board.loadBoards();
+  board.loadBoards()
 
   if (route.params.id) {
     board.setBoard(route.params.id as string)
@@ -61,7 +62,9 @@ onMounted(() => {
 
 watch(
   () => route.params.id,
-  (id) => { if (id) board.setBoard(id as string) }
+  (id) => {
+    if (id) board.setBoard(id as string)
+  },
 )
 
 const onAddColumn = () => {

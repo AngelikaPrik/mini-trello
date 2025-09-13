@@ -31,7 +31,7 @@
         </div>
 
         <draggable
-          v-model="column.tasks"
+          :list="column.tasks"
           :group="{ name: 'tasks', pull: true, put: true }"
           class="list"
           :animation="400"

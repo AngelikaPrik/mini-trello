@@ -6,7 +6,7 @@ import type { User } from '@supabase/supabase-js'
 
 export const useBoardStore = defineStore('board', () => {
   const user = ref<User | null>()
-  const boardId = ref<string | null>(null)
+  const activeBoard = ref<string | null>(null)
   const boards = ref<IBoard[]>([])
   const columns = ref<IColumn[]>([])
 
@@ -29,17 +29,17 @@ export const useBoardStore = defineStore('board', () => {
   }
 
   const setBoard = async (id: string) => {
-    boardId.value = id
+    activeBoard.value = id
     await loadBoard()
   }
 
   const loadBoard = async () => {
-    if (!boardId.value) return
+    if (!activeBoard.value) return
 
     const { data: cols, error: colError } = await supabase
       .from('columns')
       .select('id, title, order')
-      .eq('board_id', boardId.value)
+      .eq('board_id', activeBoard.value)
       .order('order', { ascending: true })
     if (colError) throw colError
 
@@ -81,12 +81,12 @@ export const useBoardStore = defineStore('board', () => {
   }
 
   const addColumn = async (title: string) => {
-    if (!boardId.value) return
+    if (!activeBoard.value) return
     const order = (columns.value.at(-1)?.order ?? -1) + 1
 
     const { data, error } = await supabase
       .from('columns')
-      .insert({ board_id: boardId.value, title, order })
+      .insert({ board_id: activeBoard.value, title, order })
       .select('id, title')
       .single()
     if (error) throw error
@@ -133,11 +133,11 @@ export const useBoardStore = defineStore('board', () => {
   }
 
   const changeColumnsOrder = async () => {
-    if (!boardId.value) return
+    if (!activeBoard.value) return
 
     const payload = columns.value.map((col, index) => ({
       id: col.id,
-      board_id: boardId.value,
+      board_id: activeBoard.value,
       order: index,
       title: col.title,
     }))
@@ -176,6 +176,7 @@ export const useBoardStore = defineStore('board', () => {
 
   return {
     boards,
+    activeBoard,
     columns,
     loadBoards,
     setBoard,
