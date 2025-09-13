@@ -15,6 +15,7 @@ defineProps<{ task: ITask }>()
   padding: var(--space-m);
   border-radius: var(--radius-m);
   background: #fff;
+  box-shadow: rgba(99, 99, 99, 0.05) 0px 2px 8px 0px;
 }
 
 .title {

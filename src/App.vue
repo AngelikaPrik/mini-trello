@@ -1,7 +1,7 @@
 <template>
   <Header :user="user" />
   <div v-if="user">
-    <BoardPage />
+    <BoardPage :user="user" />
   </div>
 </template>
 

@@ -1,25 +1,28 @@
 <template>
-  <div class="wrapper">
-    <draggable
-      v-model="board.columns"
-      :group="{ name: 'columns', pull: true, put: false }"
-      item-key="id"
-      :animation="400"
-      class="board"
-      @end="onChangeColumnsOrder"
-    >
-      <template #item="{ element: col }">
-        <ColumnItem
-          :column="col"
-          @rename="onChangeColumnName"
-          @remove="onRemoveColumn"
-          @add-task="onAddTask"
-          @reorder-tasks="onChangeTasksOrder"
-        />
-      </template>
-    </draggable>
-    <UiButton v-if="board.activeBoard" @click="onAddColumn">Добавить колонку</UiButton>
-    <div v-if="!board.activeBoard">Пожалуйста, создайте доску или выберите из уже созданных</div>
+  <div class="section">
+    <Sidebar :user="user" />
+    <div class="wrapper">
+      <draggable
+        v-model="board.columns"
+        :group="{ name: 'columns', pull: true, put: false }"
+        item-key="id"
+        :animation="400"
+        class="board"
+        @end="onChangeColumnsOrder"
+      >
+        <template #item="{ element: col }">
+          <ColumnItem
+            :column="col"
+            @rename="onChangeColumnName"
+            @remove="onRemoveColumn"
+            @add-task="onAddTask"
+            @reorder-tasks="onChangeTasksOrder"
+          />
+        </template>
+      </draggable>
+      <UiButton v-if="board.activeBoard" @click="onAddColumn">Добавить колонку</UiButton>
+      <div v-if="!board.activeBoard">Пожалуйста, создайте доску или выберите из уже созданных</div>
+    </div>
   </div>
 
   <UiModal
@@ -43,11 +46,14 @@ import { useBoardStore } from '@/stores/board'
 
 import { onMounted, ref, watch } from 'vue'
 import { UiButton, UiModal } from '@/components/ui'
-import { ColumnItem } from '@/components/widgets'
+import { ColumnItem, Sidebar } from '@/components/widgets'
 import { useRoute } from 'vue-router'
+import type { User } from '@supabase/supabase-js'
 const modalOpen = ref(false)
 const columnToRemove = ref<string | null>(null)
 const activeDropdown = ref<string | null>(null)
+
+defineProps<{ user: User | null }>()
 
 const board = useBoardStore()
 const route = useRoute()
@@ -107,18 +113,23 @@ const onChangeTasksOrder = () => {
 </script>
 
 <style scoped>
+.section {
+  display: flex;
+  margin: 0 auto;
+  gap: var(--space-l);
+  margin-top: var(--space-l);
+  width: 90%;
+}
 .wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--space-l);
-  width: 90%;
-  margin: 0 auto;
-  margin-top: var(--space-l);
+  flex-direction: column;
 }
 
 .board {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
   gap: var(--space-l);
 }
