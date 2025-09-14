@@ -21,7 +21,6 @@ defineProps<{ task: ITask }>()
 .title {
   font-size: var(--font-size-s);
   font-weight: var(--font-weight-medium);
-  margin-top: var(--space-s);
 }
 
 .tag {
@@ -33,5 +32,6 @@ defineProps<{ task: ITask }>()
   border-radius: 5px;
   text-transform: uppercase;
   color: #70aecd;
+  margin-bottom: var(--space-s);
 }
 </style>

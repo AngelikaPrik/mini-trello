@@ -9,6 +9,7 @@
         :animation="400"
         class="board"
         @end="onChangeColumnsOrder"
+        v-if="board.activeBoard"
       >
         <template #item="{ element: col }">
           <ColumnItem

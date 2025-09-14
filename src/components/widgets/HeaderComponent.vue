@@ -45,6 +45,6 @@ async function logout() {
 }
 
 .user-img {
-  border-radius: var(--radius-l);
+  border-radius: 40px;
 }
 </style>

@@ -80,6 +80,14 @@ export const useBoardStore = defineStore('board', () => {
     return data.id
   }
 
+  const removeBoard = async (boardId: string) => {
+    const { error } = await supabase.from('boards').delete().eq('id', boardId)
+    if (error) throw error
+
+    boards.value = boards.value.filter((b) => b.id !== boardId)
+    if (boardId === activeBoard.value) activeBoard.value = null
+  }
+
   const addColumn = async (title: string) => {
     if (!activeBoard.value) return
     const order = (columns.value.at(-1)?.order ?? -1) + 1
@@ -182,6 +190,7 @@ export const useBoardStore = defineStore('board', () => {
     setBoard,
     loadBoard,
     addBoard,
+    removeBoard,
     addColumn,
     addTask,
     renameColumn,
