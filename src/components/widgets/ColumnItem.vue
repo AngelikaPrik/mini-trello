@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="column" @mouseenter="hovered = true" @mouseleave="hovered = false">
-      <div>
+      <div class="content">
         <div class="top">
           <h2 class="title">{{ column.title }}</h2>
           <div class="column-menu">
@@ -117,6 +117,12 @@ const createTask = () => {
   display: inline-block;
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--space-m);
+}
+
 .top {
   display: flex;
   justify-content: space-between;
@@ -176,7 +182,6 @@ const createTask = () => {
 
 .list {
   list-style: none;
-  padding: var(--space-m) 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-s);
